@@ -7,6 +7,7 @@ node_js:
 
 env:
   global:
+    - APP_NAME=samplenode-heroku
     - FOO=FUBU
 
   matrix:
@@ -25,6 +26,7 @@ build:
   ci:
     - ps -eax
     - ls -al
+    - git push -f git@heroku.com:$APP_NAME.git master
 
   post_ci:
     - docker push shippabledocker/shiphitchcock1_sample_node
@@ -33,6 +35,3 @@ integrations:
   hub:
     - integrationName: ship-docker
       type: docker
-      branches:
-        only:
-          - master 
