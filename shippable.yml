@@ -35,3 +35,6 @@ integrations:
   hub:
     - integrationName: ship-docker
       type: docker
+      branch: 
+        only
+          - withouttoolbelt
