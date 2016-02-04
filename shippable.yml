@@ -7,32 +7,23 @@ node_js:
 
 env:
   global:
-    - FOO=FUBU
-
+    - APP_NAME=node-mongo-newbuild
+    - secure: JEiqAwFKUDvaZUgPCFFLAifmhGjI1lqugCPxhYfqSzTi+8xwSHmyYjQVLvuw0uy+SxgaMNRXQNoUi3nNaLZVZlqqe0mYwCEj51GRBHBZe6xIGYllfBk+2MnKjPy3t+brIqq7yrLNyMqj8S+MubWpb90ne7ktYpgn52nAe+IPFY1dK3zfaHflCeBb+H8MDAEtRVdEZD5+km6Uw0cO1O0FW6Qer7elLuKIF+qirpHflKBiy5+m+KwMaCXVT6gvp1UCWPnVEtpvqyLJYIjEH3Tr4lvSwx6WpuDUzrmsPFIMg5NPOYRK0oaA4FaSjniGbpmL1DsHohUyTf9Yuv8C+P0n9g==
+    
   matrix:
     - M1=ONE
 
 build:
-  pre_ci:
-    - docker build -t=shippabledocker/shiphitchcock1_sample_node .
-
-  pre_ci_boot:
-    image_name: shippabledocker/shiphitchcock1_sample_node
-    image_tag: latest
-    pull: false
-    options: '--privileged=true --net=bridge -e FOO=true -e BOO=false'
 
   ci:
+    - which heroku || wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
     - ps -eax
     - ls -al
-
-  post_ci:
-    - docker push shippabledocker/shiphitchcock1_sample_node
+    - test -f ~/.ssh/id_rsa.heroku || ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.heroku && heroku keys:add ~/.ssh/id_rsa.heroku
+    - git remote -v | grep ^heroku || heroku git:remote --ssh-git --app $APP_NAME
+    - git push -f heroku master
 
 integrations:
   hub:
     - integrationName: ship-docker
       type: docker
-      branches:
-        only:
-          - master 
